@@ -1,0 +1,48 @@
+services:
+  frontend:
+    image: guijordao21/acm-mongo-frontend
+    ports:
+      - 3000:3000
+    stdin_open: true
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    container_name: frontend
+    restart: always
+    networks:
+      - react-express
+    depends_on:
+      - backend
+
+  backend:
+    container_name: backend
+    restart: always
+    image: guijordao21/acm-mongo-backend
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongo
+    networks:
+      - express-mongo
+      - react-express
+    expose: 
+      - 3000
+  
+  mongo:
+    container_name: mongo
+    restart: always
+    image: guijordao21/mongo:4.2.0
+    volumes:
+      - type: volume
+        source: mongodb_data_volume
+        target: /data/db
+    networks:
+      - express-mongo
+    expose:
+      - 27017
+networks:
+  react-express:
+  express-mongo:
+volumes:
+  mongodb_data_volume:
